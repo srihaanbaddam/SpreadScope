@@ -307,16 +307,16 @@ export const DEFAULT_PARAMS = {
   lookbackWindow: 35,
   zScoreWindow: 10,
   timePeriod: 180,
-  minCorrelation: 0.85,
-  minRSquared: 0.72,
+  minCorrelation: 0.75,
+  minRSquared: 0.55,
   topPairsCount: 20,
 } as const;
 
 export const STAT_THRESHOLDS = {
-  tradableMinCorrelation: 0.85,
-  tradableMinRSquared: 0.72,
-  unstableMinCorrelation: 0.75,
-  unstableMaxRSquared: 0.72,
-  stableMinConsistency: 0.80,
-  mediumMinConsistency: 0.60,
+  tradableMinCorrelation: 0.80,
+  tradableMinRSquared: 0.60,
+  unstableMinCorrelation: 0.70,
+  unstableMaxRSquared: 0.55,
+  stableMinConsistency: 0.75,
+  mediumMinConsistency: 0.55,
 } as const;

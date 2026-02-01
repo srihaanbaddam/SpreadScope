@@ -3,18 +3,11 @@
 import type { CacheEntry } from './types';
 
 const CACHE_CONFIG = {
-  
-  PRICE_DATA_TTL: 60 * 60 * 1000,
-  
-  
-  PAIRS_RESULT_TTL: 15 * 60 * 1000,
-  
-  
-  CORRELATION_TTL: 5 * 60 * 1000,
-  
-  
-  MAX_PRICE_ENTRIES: 100,
-  MAX_RESULT_ENTRIES: 10,
+  PRICE_DATA_TTL: 2 * 60 * 60 * 1000,
+  PAIRS_RESULT_TTL: 30 * 60 * 1000,
+  CORRELATION_TTL: 15 * 60 * 1000,
+  MAX_PRICE_ENTRIES: 150,
+  MAX_RESULT_ENTRIES: 20,
 };
 
 const priceCache = new Map<string, CacheEntry<number[]>>();

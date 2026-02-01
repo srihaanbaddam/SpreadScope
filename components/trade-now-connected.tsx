@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
+// Type for pair data from API
 interface PairData {
   rank: number;
   tickerA: string;
@@ -48,6 +49,7 @@ interface TradeNowResponse {
   error?: string;
 }
 
+// Sector display name mapping
 const sectorDisplayNames: Record<string, string> = {
   "Technology": "Technology",
   "Financials": "Financials",
@@ -102,10 +104,10 @@ export function TradeNow() {
     }
   }, [lookbackWindow, zScoreWindow, timePeriod]);
 
-  
+  // Load data on initial mount
   useEffect(() => {
     fetchPairs();
-  }, []); 
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleUpdateResults = () => {
     fetchPairs();
@@ -114,7 +116,7 @@ export function TradeNow() {
   return (
     <main className="min-h-[calc(100vh-4rem)]">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        {}
+        {/* Header */}
         <div className="mb-8">
           <h1 className="mb-2 text-2xl font-light tracking-tight text-foreground">
             Trade Now Pairs
@@ -125,7 +127,7 @@ export function TradeNow() {
           </p>
         </div>
 
-        {}
+        {/* Controls */}
         <div className="mb-8 border border-border bg-card p-6">
           <div className="mb-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground">
@@ -140,9 +142,12 @@ export function TradeNow() {
               <Input
                 id="lookback"
                 type="number"
+                min="10"
+                max="252"
                 value={lookbackWindow}
                 onChange={(e) => setLookbackWindow(e.target.value)}
                 className="h-9"
+                disabled={isLoading}
               />
               <p className="text-xs text-muted-foreground">
                 Defines historical period for calculating mean relationship
@@ -155,9 +160,12 @@ export function TradeNow() {
               <Input
                 id="zscore"
                 type="number"
+                min="5"
+                max="60"
                 value={zScoreWindow}
                 onChange={(e) => setZScoreWindow(e.target.value)}
                 className="h-9"
+                disabled={isLoading}
               />
               <p className="text-xs text-muted-foreground">
                 Rolling window for computing current spread deviation
@@ -170,9 +178,12 @@ export function TradeNow() {
               <Input
                 id="period"
                 type="number"
+                min="60"
+                max="756"
                 value={timePeriod}
                 onChange={(e) => setTimePeriod(e.target.value)}
                 className="h-9"
+                disabled={isLoading}
               />
               <p className="text-xs text-muted-foreground">
                 Total historical data range for analysis
@@ -190,14 +201,14 @@ export function TradeNow() {
           </div>
         </div>
 
-        {}
+        {/* Error Display */}
         {error && (
           <div className="mb-8 border border-destructive/50 bg-destructive/10 p-4 text-destructive">
             <p className="text-sm">{error}</p>
           </div>
         )}
 
-        {}
+        {/* Loading State */}
         {isLoading && !hasLoaded && (
           <div className="border border-border bg-card p-12 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
@@ -210,100 +221,100 @@ export function TradeNow() {
           </div>
         )}
 
-        {}
+        {/* Data Table */}
         {pairs.length > 0 && (
-        <div className="border border-border bg-card">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-secondary/50 hover:bg-secondary/50">
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Rank
-                </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Pair
-                </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Sector
-                </TableHead>
-                <TableHead className="text-right text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Correlation
-                </TableHead>
-                <TableHead className="text-right text-xs font-semibold uppercase tracking-wider text-foreground">
-                  R²
-                </TableHead>
-                <TableHead className="text-right text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Z-Score
-                </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Spread Direction
-                </TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                  Mean-Reversion
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pairs.map((pair) => (
-                <TableRow
-                  key={`${pair.tickerA}-${pair.tickerB}`}
-                  className={cn(
-                    "hover:bg-secondary/30",
-                    isLoading && "opacity-50"
-                  )}
-                >
-                  <TableCell className="font-mono text-sm text-muted-foreground">
-                    {pair.rank}
-                  </TableCell>
-                  <TableCell className="font-mono text-sm font-medium text-foreground">
-                    {pair.tickerA} / {pair.tickerB}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {sectorDisplayNames[pair.sector] || pair.sector}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm text-foreground">
-                    {pair.correlation.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-sm text-muted-foreground">
-                    {pair.rSquared.toFixed(2)}
-                  </TableCell>
-                  <TableCell
+          <div className="border border-border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-secondary/50 hover:bg-secondary/50">
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Rank
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Pair
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Sector
+                  </TableHead>
+                  <TableHead className="text-right text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Correlation
+                  </TableHead>
+                  <TableHead className="text-right text-xs font-semibold uppercase tracking-wider text-foreground">
+                    R²
+                  </TableHead>
+                  <TableHead className="text-right text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Z-Score
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Spread Direction
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                    Mean-Reversion
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pairs.map((pair) => (
+                  <TableRow
+                    key={`${pair.tickerA}-${pair.tickerB}`}
                     className={cn(
-                      "text-right font-mono text-sm font-semibold",
-                      Math.abs(pair.zScore) >= 2
-                        ? "text-foreground"
-                        : Math.abs(pair.zScore) >= 1.5
-                          ? "text-foreground/80"
-                          : "text-muted-foreground"
+                      "hover:bg-secondary/30",
+                      isLoading && "opacity-50"
                     )}
                   >
-                    {pair.zScore > 0 ? "+" : ""}
-                    {pair.zScore.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {pair.direction}
-                  </TableCell>
-                  <TableCell>
-                    <span
+                    <TableCell className="font-mono text-sm text-muted-foreground">
+                      {pair.rank}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm font-medium text-foreground">
+                      {pair.tickerA} / {pair.tickerB}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {sectorDisplayNames[pair.sector] || pair.sector}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-sm text-foreground">
+                      {pair.correlation.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-sm text-muted-foreground">
+                      {pair.rSquared.toFixed(2)}
+                    </TableCell>
+                    <TableCell
                       className={cn(
-                        "inline-block rounded px-2 py-0.5 text-xs font-medium",
-                        pair.confidence === "Stable"
-                          ? "bg-secondary text-foreground"
-                          : pair.confidence === "Medium"
-                            ? "bg-secondary/70 text-muted-foreground"
-                            : "bg-secondary/40 text-muted-foreground"
+                        "text-right font-mono text-sm font-semibold",
+                        Math.abs(pair.zScore) >= 2
+                          ? "text-foreground"
+                          : Math.abs(pair.zScore) >= 1.5
+                            ? "text-foreground/80"
+                            : "text-muted-foreground"
                       )}
                     >
-                      {pair.confidence}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                      {pair.zScore > 0 ? "+" : ""}
+                      {pair.zScore.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {pair.direction}
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          "inline-block rounded px-2 py-0.5 text-xs font-medium",
+                          pair.confidence === "Stable"
+                            ? "bg-secondary text-foreground"
+                            : pair.confidence === "Medium"
+                              ? "bg-secondary/70 text-muted-foreground"
+                              : "bg-secondary/40 text-muted-foreground"
+                        )}
+                      >
+                        {pair.confidence}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
 
-        {}
+        {/* Empty State */}
         {!isLoading && hasLoaded && pairs.length === 0 && !error && (
           <div className="border border-dashed border-border bg-secondary/20 p-12 text-center">
             <p className="text-sm text-muted-foreground">
@@ -312,7 +323,7 @@ export function TradeNow() {
           </div>
         )}
 
-        {}
+        {/* Metadata */}
         {metadata && pairs.length > 0 && (
           <div className="mt-4 text-xs text-muted-foreground">
             <p>
@@ -322,7 +333,7 @@ export function TradeNow() {
           </div>
         )}
 
-        {}
+        {/* Disclaimer */}
         <div className="mt-6 border-l-2 border-border pl-4">
           <p className="text-xs text-muted-foreground">
             <span className="font-semibold">Disclaimer:</span> The data

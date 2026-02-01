@@ -304,24 +304,19 @@ export const ALLOWED_INDICES = new Set([
 ]);
 
 export const DEFAULT_PARAMS = {
-  lookbackWindow: 35,      
-  zScoreWindow: 10,        
-  timePeriod: 252,         
-  minCorrelation: 0.85,    
-  minRSquared: 0.70,       
-  topPairsCount: 20,       
+  lookbackWindow: 35,
+  zScoreWindow: 10,
+  timePeriod: 180,
+  minCorrelation: 0.85,
+  minRSquared: 0.72,
+  topPairsCount: 20,
 } as const;
 
 export const STAT_THRESHOLDS = {
-  
   tradableMinCorrelation: 0.85,
-  tradableMinRSquared: 0.70,
-  
-  
+  tradableMinRSquared: 0.72,
   unstableMinCorrelation: 0.75,
-  unstableMaxRSquared: 0.70,
-  
-  
-  stableMinConsistency: 0.85,  
-  mediumMinConsistency: 0.65,  
+  unstableMaxRSquared: 0.72,
+  stableMinConsistency: 0.80,
+  mediumMinConsistency: 0.60,
 } as const;

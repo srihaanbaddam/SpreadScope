@@ -78,19 +78,18 @@ function generatePairCandidates(
 }
 
 function getRepresentativeTickers(): string[] {
-  
   const selectedBySector: Record<string, string[]> = {
-    'Technology': ['AAPL', 'MSFT', 'NVDA', 'GOOGL', 'META', 'AVGO', 'ORCL', 'CRM'],
+    'Technology': ['AAPL', 'MSFT', 'NVDA', 'AVGO', 'ORCL', 'AMD', 'QCOM', 'TXN'],
     'Financials': ['JPM', 'BAC', 'WFC', 'GS', 'MS', 'V', 'MA', 'C'],
     'Healthcare': ['UNH', 'JNJ', 'LLY', 'MRK', 'ABBV', 'PFE', 'TMO', 'ABT'],
-    'Consumer Discretionary': ['AMZN', 'TSLA', 'HD', 'MCD', 'NKE', 'LOW', 'SBUX', 'TGT'],
-    'Consumer Staples': ['PG', 'KO', 'PEP', 'COST', 'WMT', 'PM', 'MDLZ', 'CL'],
-    'Energy': ['XOM', 'CVX', 'COP', 'EOG', 'SLB', 'MPC', 'PSX', 'VLO'],
-    'Industrials': ['CAT', 'DE', 'GE', 'UNP', 'HON', 'BA', 'LMT', 'UPS'],
-    'Communication Services': ['GOOGL', 'META', 'NFLX', 'DIS', 'VZ', 'T', 'CMCSA', 'TMUS'],
-    'Utilities': ['NEE', 'DUK', 'SO', 'D', 'SRE', 'AEP', 'EXC', 'XEL'],
-    'Materials': ['LIN', 'APD', 'SHW', 'ECL', 'FCX', 'NEM', 'NUE', 'DOW'],
-    'Real Estate': ['PLD', 'AMT', 'EQIX', 'CCI', 'PSA', 'O', 'SPG', 'WELL'],
+    'Consumer Discretionary': ['AMZN', 'TSLA', 'HD', 'MCD', 'NKE', 'LOW'],
+    'Consumer Staples': ['PG', 'KO', 'PEP', 'COST', 'WMT', 'PM'],
+    'Energy': ['XOM', 'CVX', 'COP', 'EOG', 'SLB', 'MPC'],
+    'Industrials': ['CAT', 'DE', 'GE', 'UNP', 'HON', 'BA'],
+    'Communication Services': ['GOOGL', 'META', 'NFLX', 'DIS', 'VZ', 'T'],
+    'Utilities': ['NEE', 'DUK', 'SO', 'D', 'SRE', 'AEP'],
+    'Materials': ['LIN', 'APD', 'SHW', 'FCX', 'NEM', 'NUE'],
+    'Real Estate': ['PLD', 'AMT', 'EQIX', 'CCI', 'PSA', 'O'],
   };
   
   const allTickers = new Set<string>();

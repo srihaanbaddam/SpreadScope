@@ -41,6 +41,8 @@ interface CorrelationResponse {
 export function CorrelationCalculator() {
   const [tickerA, setTickerA] = useState("");
   const [tickerB, setTickerB] = useState("");
+  const [lookbackWindow, setLookbackWindow] = useState("180");
+  const [timePeriod, setTimePeriod] = useState("360");
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +63,8 @@ export function CorrelationCalculator() {
         body: JSON.stringify({
           tickerA: tickerA.trim().toUpperCase(),
           tickerB: tickerB.trim().toUpperCase(),
+          lookbackWindow: parseInt(lookbackWindow),
+          timePeriod: parseInt(timePeriod),
         }),
       });
 
@@ -171,6 +175,45 @@ export function CorrelationCalculator() {
               >
                 {isCalculating ? "Calculating..." : "Calculate"}
               </Button>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2 border-t border-border pt-6">
+            <div className="space-y-2">
+              <Label htmlFor="lookback" className="text-xs text-muted-foreground">
+                Lookback Window (days)
+              </Label>
+              <Input
+                id="lookback"
+                type="number"
+                min="30"
+                max="500"
+                value={lookbackWindow}
+                onChange={(e) => setLookbackWindow(e.target.value)}
+                className="h-10"
+                disabled={isCalculating}
+              />
+              <p className="text-xs text-muted-foreground">
+                Period for calculating correlation metrics (30-500)
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="period" className="text-xs text-muted-foreground">
+                Time Period (days)
+              </Label>
+              <Input
+                id="period"
+                type="number"
+                min="60"
+                max="1000"
+                value={timePeriod}
+                onChange={(e) => setTimePeriod(e.target.value)}
+                className="h-10"
+                disabled={isCalculating}
+              />
+              <p className="text-xs text-muted-foreground">
+                Total historical data range for analysis (60-1000)
+              </p>
             </div>
           </div>
         </div>

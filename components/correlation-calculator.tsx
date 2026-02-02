@@ -177,8 +177,15 @@ export function CorrelationCalculator() {
               </Button>
             </div>
           </div>
+        </div>
 
-          <div className="mt-6 grid gap-6 md:grid-cols-2 border-t border-border pt-6">
+        <div className="mb-8 border border-border bg-card p-6">
+          <div className="mb-4">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground">
+              Parameters
+            </h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="lookback" className="text-xs text-muted-foreground">
                 Lookback Window (days)
@@ -190,7 +197,7 @@ export function CorrelationCalculator() {
                 max="500"
                 value={lookbackWindow}
                 onChange={(e) => setLookbackWindow(e.target.value)}
-                className="h-10"
+                className="h-9"
                 disabled={isCalculating}
               />
               <p className="text-xs text-muted-foreground">
@@ -208,7 +215,7 @@ export function CorrelationCalculator() {
                 max="1000"
                 value={timePeriod}
                 onChange={(e) => setTimePeriod(e.target.value)}
-                className="h-10"
+                className="h-9"
                 disabled={isCalculating}
               />
               <p className="text-xs text-muted-foreground">

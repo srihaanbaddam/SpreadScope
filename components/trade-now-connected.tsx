@@ -49,7 +49,6 @@ interface TradeNowResponse {
   error?: string;
 }
 
-// Sector display name mapping
 const sectorDisplayNames: Record<string, string> = {
   "Technology": "Technology",
   "Financials": "Financials",

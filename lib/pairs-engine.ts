@@ -404,7 +404,7 @@ export async function analyzeCorrelation(
     const { alignedA, alignedB } = alignPriceSeries(dataA.prices, dataB.prices);
     
     
-    const minDataPoints = params.lookbackWindow + 10;
+    const minDataPoints = Math.max(params.lookbackWindow, 30);
     if (alignedA.length < minDataPoints) {
       return {
         success: false,
@@ -413,23 +413,29 @@ export async function analyzeCorrelation(
     }
     
     
-    const returnsA = calculatePriceReturns(alignedA);
-    const returnsB = calculatePriceReturns(alignedB);
+    const lookbackPricesA = alignedA.slice(-params.lookbackWindow);
+    const lookbackPricesB = alignedB.slice(-params.lookbackWindow);
+    
+    
+    const returnsA = calculatePriceReturns(lookbackPricesA);
+    const returnsB = calculatePriceReturns(lookbackPricesB);
     const correlation = pearsonCorrelation(returnsA, returnsB);
     const rSquaredValue = calcRSquared(correlation);
     
     
-    const spreadMetrics = calculateSpreadMetrics(alignedA, alignedB, true);
+    const spreadMetrics = calculateSpreadMetrics(lookbackPricesA, lookbackPricesB, true);
     
     
+    const zScoreWindow = Math.min(20, Math.floor(params.lookbackWindow / 3));
     const zScoreMetrics = calculateZScoreMetrics(
       spreadMetrics.spread,
       params.lookbackWindow,
-      20 
+      zScoreWindow
     );
     
     
-    const stabilityMetrics = calculateStabilityMetrics(alignedA, alignedB, 30);
+    const stabilityWindow = Math.min(30, Math.floor(params.lookbackWindow / 2));
+    const stabilityMetrics = calculateStabilityMetrics(lookbackPricesA, lookbackPricesB, stabilityWindow);
     
     
     const assessment = getAssessment(
@@ -458,7 +464,7 @@ export async function analyzeCorrelation(
           mean: spreadMetrics.spreadMean,
           std: spreadMetrics.spreadStd,
         },
-        dataPoints: alignedA.length,
+        dataPoints: lookbackPricesA.length,
       },
     };
     

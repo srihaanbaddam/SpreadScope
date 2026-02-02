@@ -313,10 +313,10 @@ export const DEFAULT_PARAMS = {
 } as const;
 
 export const STAT_THRESHOLDS = {
-  tradableMinCorrelation: 0.75,
-  tradableMinRSquared: 0.55,
-  unstableMinCorrelation: 0.65,
-  unstableMaxRSquared: 0.50,
+  tradableMinCorrelation: 0.80,
+  tradableMinRSquared: 0.60,
+  unstableMinCorrelation: 0.70,
+  unstableMaxRSquared: 0.55,
   stableMinConsistency: 0.70,
   mediumMinConsistency: 0.50,
 } as const;

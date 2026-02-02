@@ -123,14 +123,18 @@ async function analyzePair(
   const { alignedA, alignedB } = alignPriceSeries(pricesA, pricesB);
   
   
-  const minDataPoints = Math.max(params.lookbackWindow, params.zScoreWindow) + 10;
+  const minDataPoints = Math.max(params.lookbackWindow, 30);
   if (alignedA.length < minDataPoints) {
     return null;
   }
   
   try {
     
-    const correlationMetrics = calculateCorrelationMetrics(alignedA, alignedB);
+    const lookbackPricesA = alignedA.slice(-params.lookbackWindow);
+    const lookbackPricesB = alignedB.slice(-params.lookbackWindow);
+    
+    
+    const correlationMetrics = calculateCorrelationMetrics(lookbackPricesA, lookbackPricesB);
     
     
     if (correlationMetrics.correlation < DEFAULT_PARAMS.minCorrelation) {
@@ -143,17 +147,19 @@ async function analyzePair(
     }
     
     
-    const spreadMetrics = calculateSpreadMetrics(alignedA, alignedB, true);
+    const spreadMetrics = calculateSpreadMetrics(lookbackPricesA, lookbackPricesB, true);
     
     
+    const zScoreWindow = Math.min(params.zScoreWindow, Math.floor(params.lookbackWindow / 3));
     const zScoreMetrics = calculateZScoreMetrics(
       spreadMetrics.spread,
       params.lookbackWindow,
-      params.zScoreWindow
+      zScoreWindow
     );
     
     
-    const stabilityMetrics = calculateStabilityMetrics(alignedA, alignedB, 30);
+    const stabilityWindow = Math.min(30, Math.floor(params.lookbackWindow / 2));
+    const stabilityMetrics = calculateStabilityMetrics(lookbackPricesA, lookbackPricesB, stabilityWindow);
     
     
     const direction = getSpreadDirection(tickerA, tickerB, zScoreMetrics.currentZScore);

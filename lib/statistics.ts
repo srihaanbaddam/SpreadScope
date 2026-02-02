@@ -185,17 +185,17 @@ export function calculateZScoreMetrics(
   const spreadStd = sampleStandardDeviation(lookbackData);
   
   
-  const currentSpread = spread[spread.length - 1] || 0;
+  const currentSpread = lookbackData[lookbackData.length - 1] || 0;
   const currentZScore = calculateZScore(currentSpread, spreadMean, spreadStd);
   
   
-  const rollingZScores = calculateRollingZScores(spread, zScoreWindow);
+  const rollingZScores = calculateRollingZScores(lookbackData, Math.min(zScoreWindow, lookbackData.length));
   
   return {
     currentZScore,
     zScoreHistory: rollingZScores,
-    zScoreMin: Math.min(...rollingZScores),
-    zScoreMax: Math.max(...rollingZScores),
+    zScoreMin: rollingZScores.length > 0 ? Math.min(...rollingZScores) : currentZScore,
+    zScoreMax: rollingZScores.length > 0 ? Math.max(...rollingZScores) : currentZScore,
   };
 }
 
@@ -289,10 +289,7 @@ export function getAssessment(
   }
   
   
-  if (
-    correlation >= STAT_THRESHOLDS.unstableMinCorrelation &&
-    rSquaredValue < STAT_THRESHOLDS.unstableMaxRSquared
-  ) {
+  if (correlation >= STAT_THRESHOLDS.unstableMinCorrelation) {
     return 'high-correlation-unstable';
   }
   

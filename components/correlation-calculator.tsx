@@ -47,8 +47,57 @@ export function CorrelationCalculator() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const validateNumericInput = (value: string, min: number, max: number): boolean => {
+    const num = parseInt(value, 10);
+    return !isNaN(num) && num >= min && num <= max;
+  };
+
+  const handleLookbackChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setLookbackWindow(value);
+  };
+
+  const handleTimePeriodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setTimePeriod(value);
+  };
+
+  const handleTickerChange = (value: string, setter: (v: string) => void) => {
+    const sanitized = value.toUpperCase().replace(/[^A-Z^]/g, '').slice(0, 5);
+    setter(sanitized);
+  };
+
+  const isFormValid = (): boolean => {
+    if (!tickerA || !tickerB) return false;
+    if (tickerA === tickerB) return false;
+    if (!validateNumericInput(lookbackWindow, 30, 500)) return false;
+    if (!validateNumericInput(timePeriod, 60, 1000)) return false;
+    const lookback = parseInt(lookbackWindow, 10);
+    const period = parseInt(timePeriod, 10);
+    if (lookback > period) return false;
+    return true;
+  };
+
+  const getValidationError = (): string | null => {
+    if (tickerA && tickerB && tickerA === tickerB) {
+      return "Please enter two different tickers";
+    }
+    if (lookbackWindow && !validateNumericInput(lookbackWindow, 30, 500)) {
+      return "Lookback window must be between 30 and 500 days";
+    }
+    if (timePeriod && !validateNumericInput(timePeriod, 60, 1000)) {
+      return "Time period must be between 60 and 1000 days";
+    }
+    const lookback = parseInt(lookbackWindow, 10);
+    const period = parseInt(timePeriod, 10);
+    if (!isNaN(lookback) && !isNaN(period) && lookback > period) {
+      return "Lookback window cannot exceed time period";
+    }
+    return null;
+  };
+
   const handleCalculate = async () => {
-    if (!tickerA || !tickerB) return;
+    if (!isFormValid()) return;
 
     setIsCalculating(true);
     setError(null);
@@ -63,8 +112,8 @@ export function CorrelationCalculator() {
         body: JSON.stringify({
           tickerA: tickerA.trim().toUpperCase(),
           tickerB: tickerB.trim().toUpperCase(),
-          lookbackWindow: parseInt(lookbackWindow),
-          timePeriod: parseInt(timePeriod),
+          lookbackWindow: parseInt(lookbackWindow, 10),
+          timePeriod: parseInt(timePeriod, 10),
         }),
       });
 
@@ -148,9 +197,10 @@ export function CorrelationCalculator() {
                 type="text"
                 placeholder="e.g., AAPL or ^GSPC"
                 value={tickerA}
-                onChange={(e) => setTickerA(e.target.value.toUpperCase())}
+                onChange={(e) => handleTickerChange(e.target.value, setTickerA)}
                 className="h-10 font-mono"
                 disabled={isCalculating}
+                maxLength={5}
               />
             </div>
             <div className="space-y-2">
@@ -162,21 +212,25 @@ export function CorrelationCalculator() {
                 type="text"
                 placeholder="e.g., MSFT or ^NDX"
                 value={tickerB}
-                onChange={(e) => setTickerB(e.target.value.toUpperCase())}
+                onChange={(e) => handleTickerChange(e.target.value, setTickerB)}
                 className="h-10 font-mono"
                 disabled={isCalculating}
+                maxLength={5}
               />
             </div>
             <div className="flex items-end">
               <Button
                 onClick={handleCalculate}
-                disabled={!tickerA || !tickerB || isCalculating}
+                disabled={!isFormValid() || isCalculating}
                 className="h-10 w-full"
               >
                 {isCalculating ? "Calculating..." : "Calculate"}
               </Button>
             </div>
           </div>
+          {getValidationError() && (
+            <p className="mt-4 text-xs text-destructive">{getValidationError()}</p>
+          )}
         </div>
 
         <div className="mb-8 border border-border bg-card p-6">
@@ -192,13 +246,16 @@ export function CorrelationCalculator() {
               </Label>
               <Input
                 id="lookback"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 min="30"
                 max="500"
                 value={lookbackWindow}
-                onChange={(e) => setLookbackWindow(e.target.value)}
+                onChange={handleLookbackChange}
                 className="h-9"
                 disabled={isCalculating}
+                maxLength={3}
               />
               <p className="text-xs text-muted-foreground">
                 Period for calculating correlation metrics (30-500)
@@ -210,13 +267,16 @@ export function CorrelationCalculator() {
               </Label>
               <Input
                 id="period"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 min="60"
                 max="1000"
                 value={timePeriod}
-                onChange={(e) => setTimePeriod(e.target.value)}
+                onChange={handleTimePeriodChange}
                 className="h-9"
                 disabled={isCalculating}
+                maxLength={4}
               />
               <p className="text-xs text-muted-foreground">
                 Total historical data range for analysis (60-1000)

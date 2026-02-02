@@ -45,11 +45,27 @@ export async function POST(request: NextRequest) {
     }
     
     
+    const lookbackWindow = typeof body.lookbackWindow === 'number' && 
+                           !isNaN(body.lookbackWindow) && 
+                           body.lookbackWindow >= 30 && 
+                           body.lookbackWindow <= 500 
+                           ? Math.floor(body.lookbackWindow) : 180;
+    
+    const timePeriod = typeof body.timePeriod === 'number' && 
+                       !isNaN(body.timePeriod) && 
+                       body.timePeriod >= 60 && 
+                       body.timePeriod <= 1000 
+                       ? Math.floor(body.timePeriod) : 360;
+    
+    
+    const validLookback = Math.min(lookbackWindow, timePeriod);
+    
+    
     const result = await analyzeCorrelation({
       tickerA: body.tickerA,
       tickerB: body.tickerB,
-      lookbackWindow: body.lookbackWindow,
-      timePeriod: body.timePeriod,
+      lookbackWindow: validLookback,
+      timePeriod: timePeriod,
     });
     
     if (!result.success) {

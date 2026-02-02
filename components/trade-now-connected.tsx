@@ -73,15 +73,39 @@ export function TradeNow() {
   const [metadata, setMetadata] = useState<TradeNowResponse["metadata"] | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 
+  const handleNumericInput = (value: string, setter: (v: string) => void) => {
+    const sanitized = value.replace(/[^0-9]/g, '');
+    setter(sanitized);
+  };
+
+  const validateNumericInput = (value: string, min: number, max: number): boolean => {
+    const num = parseInt(value, 10);
+    return !isNaN(num) && num >= min && num <= max;
+  };
+
+  const isFormValid = (): boolean => {
+    if (!validateNumericInput(lookbackWindow, 10, 252)) return false;
+    if (!validateNumericInput(zScoreWindow, 5, 60)) return false;
+    if (!validateNumericInput(timePeriod, 60, 756)) return false;
+    const lookback = parseInt(lookbackWindow, 10);
+    const zscore = parseInt(zScoreWindow, 10);
+    const period = parseInt(timePeriod, 10);
+    if (zscore > lookback) return false;
+    if (lookback > period) return false;
+    return true;
+  };
+
   const fetchPairs = useCallback(async () => {
+    if (!isFormValid()) return;
+    
     setIsLoading(true);
     setError(null);
 
     try {
       const params = new URLSearchParams({
-        lookbackWindow,
-        zScoreWindow,
-        timePeriod,
+        lookbackWindow: String(parseInt(lookbackWindow, 10)),
+        zScoreWindow: String(parseInt(zScoreWindow, 10)),
+        timePeriod: String(parseInt(timePeriod, 10)),
       });
 
       const response = await fetch(`/api/pairs?${params.toString()}`);
@@ -140,13 +164,14 @@ export function TradeNow() {
               </Label>
               <Input
                 id="lookback"
-                type="number"
-                min="10"
-                max="252"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={lookbackWindow}
-                onChange={(e) => setLookbackWindow(e.target.value)}
+                onChange={(e) => handleNumericInput(e.target.value, setLookbackWindow)}
                 className="h-9"
                 disabled={isLoading}
+                maxLength={3}
               />
               <p className="text-xs text-muted-foreground">
                 Defines historical period for calculating mean relationship
@@ -158,13 +183,14 @@ export function TradeNow() {
               </Label>
               <Input
                 id="zscore"
-                type="number"
-                min="5"
-                max="60"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={zScoreWindow}
-                onChange={(e) => setZScoreWindow(e.target.value)}
+                onChange={(e) => handleNumericInput(e.target.value, setZScoreWindow)}
                 className="h-9"
                 disabled={isLoading}
+                maxLength={2}
               />
               <p className="text-xs text-muted-foreground">
                 Rolling window for computing current spread deviation
@@ -176,13 +202,14 @@ export function TradeNow() {
               </Label>
               <Input
                 id="period"
-                type="number"
-                min="60"
-                max="756"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={timePeriod}
-                onChange={(e) => setTimePeriod(e.target.value)}
+                onChange={(e) => handleNumericInput(e.target.value, setTimePeriod)}
                 className="h-9"
                 disabled={isLoading}
+                maxLength={3}
               />
               <p className="text-xs text-muted-foreground">
                 Total historical data range for analysis
@@ -192,7 +219,7 @@ export function TradeNow() {
               <Button
                 className="h-9 w-full"
                 onClick={handleUpdateResults}
-                disabled={isLoading}
+                disabled={isLoading || !isFormValid()}
               >
                 {isLoading ? "Loading..." : "Update Results"}
               </Button>
